@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+*.env
+
+# API credentials (never commit these)
+src/api_info.yaml
+.auto_api_info.yaml
+llm_configs.yaml
+
+# Generated output
+output/
+results/
+cache/
+log/
+logs/
+figures/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

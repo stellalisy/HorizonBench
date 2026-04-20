@@ -1,0 +1,6 @@
+# Minimal dependencies for evaluation (pip install -r requirements.txt)
+# For the full dependency spec with optional groups, see pyproject.toml
+datasets>=3.0.0
+huggingface_hub>=0.20.0
+litellm>=1.0.0
+numpy>=1.24.0

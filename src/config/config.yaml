@@ -1,0 +1,240 @@
+# ============================================================================
+# HorizonBench Data Generator Configuration
+# ============================================================================
+#
+# This config controls the full data generation pipeline:
+#   python src/main.py --model gpt-4o --config src/config/config.yaml
+#
+# To customize for your own domain, modify:
+#   1. preference_domains  - the types of preferences users have
+#   2. category_weights    - the types of life events/interactions that occur
+#   3. assistant_config    - the roles the AI assistant can take
+#
+# The generator will use these as seeds and can also create new domains/events
+# beyond what you list here (controlled by new_*_probability settings).
+# ============================================================================
+
+random_seed: 42
+
+# --- Timeline Settings ---
+# Each "user" gets a simulated timeline spanning timeline_length_days, with
+# events occurring at avg_events_per_week rate. Each event may trigger
+# preference changes and generate a conversation.
+output_dir: "./output"
+user_count: 1                       # number of user timelines to generate (override with --users)
+timeline_length_days: 180           # simulated time span in days (override with --days)
+avg_events_per_week: 7              # how many life events per week
+relevant_preferences_per_event: 3   # number of preference domains affected per event
+conversation_probability: 0.9       # probability that an event produces a conversation
+max_preference_shifts: 5            # max number of preference changes per event
+verbose_logging: false
+
+# --- Agent Symmetry ---
+# When false (default): the AI assistant persona changes across conversations
+# (e.g., sometimes a tutor, sometimes a friend), which is more realistic.
+# When true: the same assistant persona is maintained across all conversations
+# for a given user, useful for studying single-assistant dynamics.
+stable_agentB: false
+
+# --- LLM Configuration ---
+# The generator uses two LLM clients:
+#   llm_config       - for structured generation (user profiles, events, preferences)
+#   convo_llm_config - for conversation generation (dialogue turns)
+# Using different models lets you e.g. use a cheaper model for structure and
+# a more capable one for conversations. By default both use the --model flag.
+# Set model via CLI: python src/main.py --model gpt-4o
+# API keys: set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY env vars
+llm_config:
+  model: ""                  # set via --model flag or fill in directly
+  max_retries: 3
+  retry_delay: 2
+  max_tokens: 4096
+  temperature: 0.7
+  cache_responses: true
+  log_prompts: false
+  log_responses: false
+  random_seed: 42
+  model_kwargs:
+    top_p: 0.95
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    num_gpus: 0
+
+convo_llm_config:
+  model: ""                  # defaults to same as llm_config if empty
+  max_retries: 3
+  retry_delay: 2
+  max_tokens: 4096
+  temperature: 0.7
+  cache_responses: true
+  log_prompts: false
+  log_responses: false
+  random_seed: 42
+  model_kwargs:
+    top_p: 0.95
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    num_gpus: 0
+
+# --- Preference Domains ---
+# These are the types of user preferences that evolve over the timeline.
+# The generator uses these as starting seeds. Customize these for your domain.
+# Example: for healthcare, you might use ["treatment_approach", "medication_attitude",
+#          "provider_communication_style", "wellness_priorities", "diet_preferences"]
+preference_domains: [
+  "emotional_support_style",
+  "communication_intimacy",
+  "creative_collaboration",
+  "analytical_approach",
+  "philosophical_engagement",
+  "productivity_style",
+  "entertainment_preferences"
+]
+# Probability of the LLM generating NEW preference domains beyond the list above.
+# Set to 0 to restrict generation to only the listed domains.
+new_preference_domain_probability: 0.2
+max_preference_domains: 30
+num_initial_preferences_per_domain: 8
+new_preference_structure_probability: 0.2
+max_preference_structures_per_domain: 15
+
+# --- Event Categories ---
+# These define what kinds of life events/interactions occur in the timeline.
+# Weights control their relative frequency (will be normalized).
+# Customize these for your domain. Example for healthcare:
+#   {"routine_checkup": 0.3, "symptom_onset": 0.2, "lifestyle_change": 0.25,
+#    "medication_adjustment": 0.15, "specialist_referral": 0.1}
+category_weights: {
+  "emotional_social_support": 0.2638,
+  "romantic_interaction": 0.2234,
+  "risky_dark_roleplay": 0.1009,
+  "collaborative_storytelling": 0.2557,
+  "philosophical_moral_inquiry": 0.0753,
+  "critical_debates_strategic_analysis": 0.0808
+}
+# Weight for sampling from the above categories vs. generating novel ones.
+realistic_category_weight: 0.8
+# Probability of creating NEW event categories beyond the list above.
+# Set to 0 to restrict generation to only the listed categories.
+new_event_category_probability: 0.4
+max_events_categories: 50
+num_initial_events_per_category: 12
+new_event_structure_probability: 0.3
+max_events_per_category: 25
+max_context_events: 10
+recency_weight: 0.5
+category_transition_smoothing: 0.1
+
+# --- Assistant Persona ---
+# Controls the AI assistant character in generated conversations.
+# Customize example_roles for your domain (e.g., ["doctor", "nurse",
+# "nutritionist", "therapist", "pharmacist"] for healthcare).
+assistant_config:
+  example_roles: [
+    "therapist", "tutor", "friend", "expert",
+    "coach", "mentor", "creative_partner", "another_human"
+  ]
+  allow_custom_roles: true        # if true, LLM can invent roles beyond the list
+  role_selection: "event_based"   # role chosen based on event type
+  persona_detail_level: "rich"    # "rich" = detailed persona, "basic" = minimal
+
+# --- Personality Data ---
+# The generator enriches user profiles with real personality trait data from
+# the IPIP-NEO-300 inventory (included in data/PAPI/).
+use_cache: false
+libraries:
+  user_library_path: "cache/users.json"
+  event_library_path: "cache/events.json"
+  preference_library_path: "cache/preferences.json"
+  append_to_existing: true
+  enriched_user_profile: true
+  enriched_data_dir: data/PAPI
+
+# --- Evaluation (optional) ---
+# Built-in evaluation of generated data quality. Usually left disabled;
+# run separately with --eval-only if needed.
+evaluation:
+  run_evaluation: false
+  evaluation_samples: 5
+  consistency_threshold: 0.7
+  plausibility_threshold: 0.7
+  diversity_threshold: 0.5
+  llm_based_evaluation: true
+  save_detailed_results: true
+  metrics:
+    - "temporal_consistency"
+    - "preference_stability"
+    - "psychological_plausibility"
+    - "conversation_naturalness"
+    - "event_sequence_plausibility"
+    - "diversity"
+    - "intent_fulfillment"
+    - "agent_symmetry_quality"
+    - "assistant_persona_consistency"
+
+# --- Intent System ---
+# Controls how user intents are sampled during conversation generation.
+intent_config:
+  intent_diversity: 0.7
+  intent_complexity: 0.6
+  fulfillment_threshold: 0.6
+  assessment_confidence_threshold: 0.5
+
+# --- Conversation Generation ---
+conversation_config:
+  min_conversation_turns: 6
+  max_conversation_turns: 30
+  default_conversation_turns: 6
+  intent_expression_probability: 0.8
+  intent_conflict_probability: 0.2
+  preference_expression_threshold: 0.6
+  temporal_context_window: 3
+
+# Probability that a conversation references a preference from a past event.
+sample_temporal_preference_prob: 0.3
+
+# --- Benchmark Item Generation ---
+# After conversations are generated, the pipeline creates counterfactual MCQ
+# items with pre-evolution distractors, then validates them using multiple LLMs.
+# To skip benchmark generation entirely, set enabled: false.
+benchmark_generation:
+  temporal_preference_recall_days_min: 30
+  enabled: true
+  num_counterfactual_attributes_min: 1
+  num_counterfactual_attributes_max: 1
+  num_alternatives_per_attribute: 4
+  generation_probability: 0.8
+  output_dir: "benchmark"
+  validate_requires_history: true
+  history_validation_runs: 1
+  # Models used to validate that benchmark items require conversation history.
+  # The pipeline gracefully skips any model whose API key is unavailable.
+  # For single-provider setups, list only models you have access to.
+  validation_llm_configs:
+    - model_name: "gpt-4.1"
+    - model_name: "gemini-3-flash"
+    - model_name: "o4-mini"
+
+# --- Output ---
+output_config:
+  save_individual_timelines: true
+  save_combined_timeline: true
+  save_intent_records: true
+  save_assistant_records: true
+  save_conversations: true
+  save_evaluation_details: true
+  timeline_format: "json"
+  conversation_format: "json"
+  organize_by_user: true
+  include_metadata: true
+
+# --- Debug ---
+debug:
+  enable_breakpoints: false
+  log_intent_sampling: false
+  log_assistant_generation: false
+  log_fulfillment_assessment: false
+  save_intermediate_results: false
+  verbose_llm_calls: false
+
+dev_mode: false

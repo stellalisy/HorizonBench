@@ -1,0 +1,16 @@
+# API configuration for src/llm agents.
+# Copy this file to src/api_info.yaml and fill in your API keys.
+# Only needed if using the data generation pipeline (src/main.py).
+# The evaluate.py script uses litellm by default and reads API keys from environment variables.
+
+openai:
+  api_type: openai
+  api_key: "your-openai-api-key"
+
+anthropic:
+  api_type: anthropic
+  api_key: "your-anthropic-api-key"
+
+gemini:
+  api_type: google
+  api_key: "your-google-api-key"

@@ -1,0 +1,3 @@
+[submodule "src/llm"]
+	path = src/llm
+	url = https://github.com/stellalisy/llm.git
