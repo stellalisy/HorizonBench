@@ -412,11 +412,14 @@ python scripts/stat_tests_controlled.py --results-dir output/
 ## Citation
 
 ```bibtex
-@inproceedings{li2025horizonbench,
-  title={HorizonBench: Long-Horizon Personalization with Evolving Preferences},
-  author={Li, Shuyue Stella and Paranjape, Bhargavi and Oktar, Kerem and Ma, Zhongyao and Zhou, Gelin and Guan, Lin and Zhang, Na and Park, Sem and Chen, Lin and Yang, Diyi and Tsvetkov, Yulia and Celikyilmaz, Asli},
-  booktitle={Conference on Language Modeling (COLM)},
-  year={2025}
+@misc{li2026horizonbenchlonghorizonpersonalizationevolving,
+      title={HorizonBench: Long-Horizon Personalization with Evolving Preferences}, 
+      author={Shuyue Stella Li and Bhargavi Paranjape and Kerem Oktar and Zhongyao Ma and Gelin Zhou and Lin Guan and Na Zhang and Sem Park and Lin Chen and Diyi Yang and Yulia Tsvetkov and Asli Celikyilmaz},
+      year={2026},
+      eprint={2604.17283},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2604.17283}, 
 }
 ```
 
