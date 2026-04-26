@@ -6,7 +6,7 @@ User preferences evolve across months of interaction, and tracking them requires
 
 Across 25 frontier models, the best achieves 52.8% and most score at or below the 20% chance baseline. When models err on evolved preferences, they select the pre-evolution distractor at rates significantly above chance, retrieving the user's originally stated preference without integrating the life event that changed it.
 
-- **Paper**: [HorizonBench: Long-Horizon Personalization with Evolving Preferences](https://arxiv.org/abs/XXXX.XXXXX)
+- **Paper**: [HorizonBench: Long-Horizon Personalization with Evolving Preferences](https://arxiv.org/pdf/2604.17283)
 - **Dataset**: [stellalisy/HorizonBench on HuggingFace](https://huggingface.co/datasets/stellalisy/HorizonBench) (4,245 items, 360 users, 3 configs)
 
 ---
